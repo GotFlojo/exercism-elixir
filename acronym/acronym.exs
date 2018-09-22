@@ -15,12 +15,14 @@ defmodule Acronym do
     |> Enum.join("")
   end
 
-  def capitalize([]), do: []
-  def capitalize(words) do
+  @spec capitalize([ String.t() ]) :: [ String.t() ]
+  defp capitalize([]), do: []
+  defp capitalize(words) do
     Enum.map(words, &capitalize_lower/1)
   end
 
-  def capitalize_lower(string) do
+  @spec capitalize_lower(String.t()) :: String.t()
+  defp capitalize_lower(string) do
     if is_all_lower?(string) do
       String.capitalize(string)
     else
@@ -28,16 +30,19 @@ defmodule Acronym do
     end
   end
 
-  def extract_uppercase([]), do: []
-  def extract_uppercase(words) do
+  @spec extract_uppercase([ String.t() ]) :: [ String.t() ]
+  defp extract_uppercase([]), do: []
+  defp extract_uppercase(words) do
     Enum.flat_map(words, &(String.split(&1, ~r<\P{Lu}>, trim: true)))
   end
 
-  def is_all_lower?(string) do
+  @spec is_all_lower?(String.t()) :: boolean
+  defp is_all_lower?(string) do
     string == String.downcase(string)
   end
 
-  def split_into_words(string) do
+  @spec split_into_words(String.t()) :: [ String.t() ]
+  defp split_into_words(string) do
     String.split(string, ~r{\W}, trim: true)
   end
 
