@@ -72,6 +72,10 @@ defmodule BobTest do
     assert Bob.hey("1, 2, 3") == "Whatever."
   end
 
+  test "just punctuation" do
+    assert Bob.hey("*****") == "Whatever."
+  end
+
   # @tag :pending
   test "question with numbers" do
     assert Bob.hey("4?") == "Sure."
