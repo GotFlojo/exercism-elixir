@@ -25,8 +25,7 @@ defmodule ProteinTranslation do
     proteins = rna
               |> String.graphemes()
               |> Enum.chunk_every(3, 3, [])
-              |> Enum.map(&(of_codon(bases_to_codons(&1))))
-              |> Enum.reduce_while([], &(filter_valid_codons(&1, &2)))
+              |> Enum.reduce_while([], &(build_protein(&1, &2)))
     case proteins do
       []              -> {:error, "invalid RNA"}
       [{:error} | _]  -> {:error, "invalid RNA"}
@@ -34,12 +33,21 @@ defmodule ProteinTranslation do
     end
   end
 
-  defp bases_to_codons([b1, b2, b3]), do: b1<>b2<>b3
-  defp bases_to_codons([_head|_tail]), do: "invalid"
+  defp bases_to_codons([b1, b2, b3]), do: {:ok, b1<>b2<>b3}
+  defp bases_to_codons([_head|_tail]), do: {:error, "invalid RNA"}
 
-  defp filter_valid_codons({:error, _}, acc), do: {:halt, [{:error}|acc]}
-  defp filter_valid_codons({:ok, "STOP"}, acc), do: {:halt, acc}
-  defp filter_valid_codons({:ok, protein}, acc), do: {:cont, [protein|acc]}
+  def build_protein(item, acc) do
+    with {:ok, rna}   <- bases_to_codons(item),
+       {:ok, protein} <- of_codon(rna)
+    do
+      case protein do 
+        "STOP" -> {:halt, acc}
+            _  -> {:cont, [protein | acc]}
+      end
+    else
+      {:error, _} -> {:halt, [{:error}|acc]}
+    end
+  end
 
   @doc """
   Given a codon, return the corresponding protein
