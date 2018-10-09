@@ -6,16 +6,14 @@ defmodule Words do
   """
   @spec count(String.t()) :: map
   def count(sentence) do
+    no_letters_nums_dashes = ~r/[^\p{L}|\p{N}|\p{Pd}]/u
     sentence
-    |> String.split(~r/[^\p{L}|\p{N}|\p{Pd}]/u, trim: true)
+    |> String.split(no_letters_nums_dashes, trim: true)
     |> Enum.reduce(%{}, &(add_word_to_histogram(&2, String.downcase(&1))))
   end
 
   @spec add_word_to_histogram(map, String.t()) :: map
   defp add_word_to_histogram(wordlist, word) do
-    case Map.fetch(wordlist, word) do
-      {:ok, val} -> %{wordlist| word => val + 1}
-      :error     -> Map.put(wordlist, word, 1)
-    end
+    Map.update(wordlist, word, 1, &(&1 + 1))
   end
 end
