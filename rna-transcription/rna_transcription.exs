@@ -10,7 +10,7 @@ defmodule RNATranscription do
   """
   @spec to_rna([char]) :: [char] | {:error, String.t()}
   def to_rna(dna) do
-    case Enum.reduce_while(dna, [], &(valid_nucleotide(&1, &2))) do
+    case Enum.reduce_while(dna, [], &valid_nucleotide/2) do
       [:error|_] -> {:error, "invalid nucleotide"}
             rna  -> Enum.reverse(rna)
     end
@@ -19,7 +19,7 @@ defmodule RNATranscription do
   defp valid_nucleotide(n, acc) do
     case Map.fetch(@transcription, n) do
       {:ok, rna} -> {:cont, [rna | acc]}
-      :error   -> {:halt, [:error | acc]}
+      :error     -> {:halt, [:error | acc]}
     end
   end
 end
